@@ -1,4 +1,4 @@
-﻿
+﻿@model List<Favorit.es.Models.AddFavoriteViewModel>
 @*dont forget to declare the view's model on the first line!*@
 
 @{
@@ -12,5 +12,21 @@
 </div>
 
 <div class="row">
-    @*the users favorites will go here*@
-</div>
+    @{
+        foreach (var image in Model)
+        {
+            @*<div class="col-xs-6 col-md-4">
+                <a href="@Url.Action("favorite", "home", new { id = image.id, url = image.url })">
+                    <img class="img-thumbnail" src="@image.url" />
+                </a>
+            </div>*@
+            <div class="col-md-4">
+                <a href="@Url.Action("unfavorite", "home", new { id = image.id })">
+                    <img src="@image.url" class="img-thumbnail"/>
+                </a>
+            </div>
+
+        }
+    }
+        @*the users favorites will go here*@
+    </div>

@@ -52,7 +52,7 @@ namespace Favorit.es.Controllers
         {
             //go to: https://www.flickr.com/services/apps/create/apply/ to get your api key
             //create a new instance of the Flickr API object
-            var flickr = new Flickr("api key", "api secret"); 
+            var flickr = new Flickr("381fe72e6e5d44f22c6192a211e5fbf0", "95203e8b65291995"); 
 
             //create a new object that represents searching for photos
             PhotoSearchOptions options = new PhotoSearchOptions();
@@ -72,10 +72,21 @@ namespace Favorit.es.Controllers
         [HttpPost]
         public ActionResult Index(string searchText)
         {
-          //this action is triggered when a user clicks the GO buttton on the main page.  The name attribute in the html input element is matched exactly to the argument name.  
+          //this action is triggered when a user clicks the GO buttton on the main page.  The name attribute in the html input element is matched exactly to the argument name.
+
+            //Index(string searchText) does this automatically
+            //string searchTextManual = Request.Form["searchText"];
 
             //return to the view a Flickr PhotoCollection using their search term instead of the default "kittens" search term used above.
-            return View();
+            var flickr = new Flickr("381fe72e6e5d44f22c6192a211e5fbf0", "95203e8b65291995");
+
+            //create a new object that represents searching for photos
+            PhotoSearchOptions options = new PhotoSearchOptions();
+            options.Tags = searchText; //what we are searching for
+            options.PerPage = 25; // results to retrieve
+            PhotoCollection photos = flickr.PhotosSearch(options);  //retrieve photos
+            return View(photos); //pass the PhotoCollection object to the View
+
         }
 
         /// <summary>
@@ -88,6 +99,8 @@ namespace Favorit.es.Controllers
             //add the AddFavoriteViewModel to our user favorites
             //save the UserFavorites
             //kick the user back to the index page.
+            this.UserFavorites.Add(addFavorite);
+            SaveUserFavorites();
             return RedirectToAction("index");
         }
 
@@ -98,7 +111,7 @@ namespace Favorit.es.Controllers
         public ActionResult MyFavorites()
         {
             //pass the UserFavorites list to the View
-            return View();
+            return View(this.UserFavorites);
         }
 
         /// <summary>
@@ -109,8 +122,11 @@ namespace Favorit.es.Controllers
         public ActionResult Unfavorite(string id)
         {
             //get the object from the UserFavorites based on the ID
+            AddFavoriteViewModel objectToBeRemoved = this.UserFavorites.Where(x => x.id == id).First();
             //remove that object from the UserFavorites
+            this.UserFavorites.Remove(objectToBeRemoved);
             //save the user favorites
+            SaveUserFavorites();
             //kick the user back to the MyFavorites screen
             return RedirectToAction("MyFavorites");
         }
